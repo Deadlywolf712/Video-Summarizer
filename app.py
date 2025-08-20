@@ -37,7 +37,7 @@ def inject_width_css(max_width_px: int):
       /* Center and cap width only; use default Streamlit theme */
       .block-container {{
         max-width: {max_width_px}px !important;
-        padding-top: 1.0rem;
+        padding-top: 3rem;
         padding-bottom: 4rem;
       }}
     </style>
@@ -46,6 +46,37 @@ def inject_width_css(max_width_px: int):
 
 
 st.set_page_config(page_title="Video Summarizer — Gemini 2.5 Pro (Files API)", layout="centered")
+
+
+def check_password():
+    """Returns `True` if the user has the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets.get("PASSWORD", ""):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input for password.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        st.write("---")
+        st.info("Note: This is a public app. Please add a password to your Streamlit secrets to protect it.")
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        # Password correct.
+        return True
 
 
 # --------------- Utilities ---------------
@@ -461,6 +492,9 @@ def fetch_transcript_text(video_id: str, max_chars: int = 15000) -> Optional[str
 
 
 # --------------- Streamlit UI ---------------
+
+if not check_password():
+    st.stop()  # Do not continue if check_password is not True.
 
 st.title("Video Summarizer — Gemini 2.5 Pro (Files API)")
 st.caption("Local-first app that uploads to the Gemini Files API (ephemeral) and returns a structured, watchless Markdown summary.")
