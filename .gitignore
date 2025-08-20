@@ -7,9 +7,6 @@ __pycache__/
 # Virtual env
 .venv/
 
-# Streamlit
-.streamlit/
-
 # Local env vars
 .env
 
