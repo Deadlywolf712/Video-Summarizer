@@ -429,7 +429,6 @@ def download_youtube(url: str, out_dir: str) -> str:
         "noplaylist": True,
         "quiet": True,
         "no_warnings": True,
-        "ffmpeg_location": ff_dir,  # use portable ffmpeg
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
